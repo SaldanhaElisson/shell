@@ -5,6 +5,7 @@
 #define BUFFER 127
 
 void read_comand(char *);
+void splice_by_space();
 
 int main(void) {
     char* comannds;
@@ -20,5 +21,5 @@ void read_comand(char *command){
         {
             printf("%s", command);
         }
-
+    
 }
