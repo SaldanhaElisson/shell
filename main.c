@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #define TRUE 1
+#define BUFFER 127
 
 void read_comand(char *);
 
@@ -13,9 +14,9 @@ int main(void) {
 }
 
 void read_comand(char *command){
-    command = (char*) malloc(2 * sizeof(char));
+    command = (char*) malloc(BUFFER * sizeof(char));
 
-    if(fgets(command, 2* sizeof(char), stdin) != NULL)
+    if(fgets(command, BUFFER* sizeof(char), stdin) != NULL)
         {
             printf("%s", command);
         }
