@@ -24,12 +24,18 @@ int main(void) {
    
     int c = split(comannds, ' ', &cmd);
 
+    char *argv[3];
+    argv[0] = "ls";
+    argv[1] = "-la";
+    argv[2] = NULL;
+
+
     printf("%s", cmd[0]);
 
     if((fork()) != NULL) {
         int teste = waitpid(-1, &status, 0);
     } else {
-        execvp (cmd[0], cmd);
+        execvp (cmd[0], argv);
     }
         
     return 0;
