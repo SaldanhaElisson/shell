@@ -10,23 +10,19 @@
 #define MAX_COMMANDS_SIZE 5
 
 void read_comand(char **);
-char ** strsplit( const char * , const char *  );
+int split (const char *, char , char ***);
 
 
 int main(void) {
     char *comannds;
-    char **cmd;
+    char **cmd = NULL;
     int status;
 
     comannds = (char*) malloc(BUFFER * sizeof(char));
-    cmd = (char **) malloc (sizeof (char *) * MAX_COMANNDS);
-    for(int i = 0; i < MAX_COMANNDS; i++){
-        cmd[i] = (char *) malloc (sizeof (char) * MAX_COMMANDS_SIZE);
-    }
-    
+   
     read_comand(&comannds);
    
-    cmd = strsplit(*comannds, " ");
+    int c = split(comannds, ' ', &cmd);
 
     printf("%s", cmd[0]);
 
@@ -47,38 +43,26 @@ void read_comand(char ** command){
    
 }
 
-char ** strsplit( const char * src, const char * delim )
+int split (const char *txt, char delim, char ***tokens)
 {
-    char * pbuf = NULL;
-    char * ptok = NULL;
-    int count = 0;
-    int srclen = 0;
-    char ** pparr = NULL;
+    int *tklen, *t, count = 1;
+    char **arr, *p = (char *) txt;
 
-    srclen = strlen( src );
-
-    pbuf = (char*) malloc( srclen + 1 );
-
-    if( !pbuf )
-        return NULL;
-
-    strcpy( pbuf, src );
-
-    ptok = strtok( pbuf, delim );
-
-    while( ptok )
+    while (*p != '\0') if (*p++ == delim) count += 1;
+    t = tklen = calloc (count, sizeof (int));
+    for (p = (char *) txt; *p != '\0'; p++) *p == delim ? *t++ : (*t)++;
+    *tokens = arr = malloc (count * sizeof (char *));
+    t = tklen;
+    p = *arr++ = calloc (*(t++) + 1, sizeof (char *));
+    while (*txt != '\0')
     {
-        pparr = (char**) realloc( pparr, (count+1) * sizeof(char*) );
-        *(pparr + count) = strdup(ptok);
-
-        count++;
-        ptok = strtok( NULL, delim );
+        if (*txt == delim)
+        {
+            p = *arr++ = calloc (*(t++) + 1, sizeof (char *));
+            txt++;
+        }
+        else *p++ = *txt++;
     }
-
-    pparr = (char**) realloc( pparr, (count+1) * sizeof(char*) );
-    *(pparr + count) = NULL;
-
-    free(pbuf);
-
-    return pparr;
+    free (tklen);
+    return count;
 }
