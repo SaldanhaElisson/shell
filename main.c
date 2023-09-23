@@ -3,6 +3,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <string.h>
+#include <assert.h>
 
 #define TRUE 1
 #define BUFFER 127
@@ -10,65 +11,75 @@
 #define MAX_COMMANDS_SIZE 5
 
 void read_comand(char **);
-int split (const char *, char , char ***);
+void split(char *[MAX_COMMANDS_SIZE], char *, const char);
 
+int main(void)
+{
+        char *comannds;
+        int status;
+        char *cmdarr[MAX_COMANNDS]; 
+        comannds = (char *)malloc(BUFFER * sizeof(char));
 
-int main(void) {
-    char *comannds;
-    char **cmd = NULL;
-    int status;
+        read_comand(&comannds);
 
-    comannds = (char*) malloc(BUFFER * sizeof(char));
-   
-    read_comand(&comannds);
-   
-    int c = split(comannds, ' ', &cmd);
+        split(cmdarr, comannds, ' ');
 
-    char *argv[3];
-    argv[0] = "ls";
-    argv[1] = "-la";
-    argv[2] = NULL;
+        char *cmdmain = cmdarr[0];
 
+        if (!(fork()))
+        {
+            int result = waitpid(-1, &status, 0);
+        }
+        else
+        {
+            execvp(cmdarr[0], cmdarr);
+        }
 
-    printf("%s", cmd[0]);
-
-    if((fork()) != NULL) {
-        int teste = waitpid(-1, &status, 0);
-    } else {
-        execvp (cmd[0], argv);
-    }
-        
+        free(comannds);
+        comannds = NULL;
+       
     return 0;
 }
 
-void read_comand(char ** command){
-   
-    if(!fgets(*command, BUFFER, stdin)){
-      printf("Erro");
+void read_comand(char **command)
+{
+
+    if (!fgets(*command, BUFFER, stdin))
+    {
+        printf("Erro");
     }
-   
 }
 
-int split (const char *txt, char delim, char ***tokens)
+void split(char *arr[MAX_COMMANDS_SIZE], char *comannds, const char a_delim)
 {
-    int *tklen, *t, count = 1;
-    char **arr, *p = (char *) txt;
+    int line = 0;
+    int col = 0;
+    int i = 0;
+    arr[line] = malloc(MAX_COMMANDS_SIZE * sizeof(char) + 1); 
 
-    while (*p != '\0') if (*p++ == delim) count += 1;
-    t = tklen = calloc (count, sizeof (int));
-    for (p = (char *) txt; *p != '\0'; p++) *p == delim ? *t++ : (*t)++;
-    *tokens = arr = malloc (count * sizeof (char *));
-    t = tklen;
-    p = *arr++ = calloc (*(t++) + 1, sizeof (char *));
-    while (*txt != '\0')
+
+    while (TRUE)
     {
-        if (*txt == delim)
+        if (*(comannds + i) == ' ')
         {
-            p = *arr++ = calloc (*(t++) + 1, sizeof (char *));
-            txt++;
+            printf("\n");
+            col = 0;
+            line++;
+            i++;
+            arr[line] = malloc(MAX_COMMANDS_SIZE * sizeof(char) + 1); 
+            continue;
         }
-        else *p++ = *txt++;
+
+        if ((int)*(comannds + i) == 10)
+        {
+            arr[line + 1] = malloc(MAX_COMMANDS_SIZE * sizeof(char) + 1); 
+            arr[line+1]= (char)0;
+            break;
+        }
+
+        arr[line][col] = *(comannds + i);
+        col++;
+        i++;
     }
-    free (tklen);
-    return count;
+
 }
